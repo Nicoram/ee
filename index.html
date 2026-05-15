@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIRCADIA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .pulse { animation: pulse 2.5s infinite; }
+        input[type="range"] { accent-color: #fbbf24; }
+    </style>
+</head>
+<body class="bg-[#0f0c09] text-white">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md rounded-[2.5rem] border border-white/10 bg-gradient-to-b from-[#1d1712] to-[#070605] shadow-2xl overflow-hidden">
+            
+            <!-- HEADER -->
+            <div class="p-6 pb-3">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <p class="text-xs tracking-[0.35em] text-amber-300/80 font-bold">CIRCADIA</p>
+                        <h1 class="mt-2 text-2xl font-semibold">Ma lampe</h1>
+                        <p class="text-sm text-white/50">Chambre principale</p>
+                    </div>
+                    <button id="powerBtn" onclick="togglePower()" class="h-12 w-12 rounded-full bg-amber-400 text-black font-bold text-xl hover:bg-amber-300 transition">⚡</button>
+                </div>
+
+                <!-- STATUS CARD -->
+                <div class="border border-white/10 bg-black/30 rounded-3xl p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-white/50">État actuel</p>
+                            <p class="text-3xl font-semibold mt-1" id="statusText">72%</p>
+                        </div>
+                        <div id="lightBulb" class="h-24 w-24 rounded-full bg-amber-300/30 border border-amber-200/60 shadow-[0_0_60px_rgba(251,191,36,0.55)] flex items-center justify-center pulse text-4xl">☀️</div>
+                    </div>
+                    <div class="mt-5 grid grid-cols-3 gap-3 text-center">
+                        <div class="rounded-2xl bg-white/6 border border-white/10 p-3">
+                            <p class="text-[11px] text-white/40">Réveil</p>
+                            <p class="text-xs font-medium mt-1" id="wakeTimeDisplay">07:30</p>
+                        </div>
+                        <div class="rounded-2xl bg-white/6 border border-white/10 p-3">
+                            <p class="text-[11px] text-white/40">Mode</p>
+                            <p class="text-xs font-medium mt-1" id="modeDisplay">Réveil naturel</p>
+                        </div>
+                        <div class="rounded-2xl bg-white/6 border border-white/10 p-3">
+                            <p class="text-[11px] text-white/40">Wi-Fi</p>
+                            <p class="text-xs font-medium mt-1">Connecté</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NAVIGATION -->
+            <nav class="px-4 py-3 flex gap-2 overflow-x-auto">
+                <button class="tab-btn active min-w-fit rounded-full px-4 py-3 bg-amber-400 text-black font-medium transition" data-tab="lumiere">Lumière</button>
+                <button class="tab-btn min-w-fit rounded-full px-4 py-3 bg-white/8 text-white/70 border border-white/10 font-medium transition hover:bg-white/12" data-tab="heure">Heure</button>
+                <button class="tab-btn min-w-fit rounded-full px-4 py-3 bg-white/8 text-white/70 border border-white/10 font-medium transition hover:bg-white/12" data-tab="ambiances">Ambiances</button>
+                <button class="tab-btn min-w-fit rounded-full px-4 py-3 bg-white/8 text-white/70 border border-white/10 font-medium transition hover:bg-white/12" data-tab="routine">Routine</button>
+            </nav>
+
+            <!-- CONTENT -->
+            <main class="p-5 min-h-[400px]">
+                
+                <!-- LUMIERE TAB -->
+                <div id="lumiere" class="tab-content">
+                    <h2 class="text-xl font-semibold">Réglage de la lumière</h2>
+                    <p class="mt-1 text-sm text-white/50">Adaptez CIRCADIA à votre réveil et votre humeur.</p>
+                    <div class="mt-5 space-y-4">
+                        <!-- Brightness Slider -->
+                        <div class="rounded-3xl border border-white/10 bg-white/6 p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="font-medium">Luminosité</p>
+                                <p class="text-amber-300 font-semibold" id="brightnessValue">72%</p>
+                            </div>
+                            <input type="range" id="brightness" min="1" max="100" value="72" class="w-full">
+                            <div class="mt-2 flex justify-between text-xs text-white/35">
+                                <span>1%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+
+                        <!-- Temperature Slider -->
+                        <div class="rounded-3xl border border-white/10 bg-white/6 p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="font-medium">Température</p>
+                                <p class="text-amber-300 font-semibold" id="tempValue">4200K</p>
+                            </div>
+                            <input type="range" id="temperature" min="1800" max="6500" value="4200" class="w-full">
+                            <div class="mt-2 flex justify-between text-xs text-white/35">
+                                <span>Chaud (1800K)</span>
+                                <span>Froid (6500K)</span>
+                            </div>
+                        </div>
+
+                        <!-- Info Card -->
+                        <div class="rounded-3xl border border-amber-300/20 bg-amber-300/10 p-5">
+                            <p class="text-amber-200 font-semibold" id="tempLabel">Naturel et équilibré</p>
+                            <p class="mt-2 text-sm text-white/60">Une lumière plus chaude favorise la détente. Une lumière plus claire aide à se sentir plus éveillé.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HEURE TAB -->
+                <div id="heure" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold">Heure et réveil</h2>
+                    <p class="mt-1 text-sm text-white/50">Programmez un lever de soleil progressif.</p>
+                    <div class="mt-5 space-y-4">
+                        <div class="rounded-3xl border border-white/10 bg-white/6 p-5 flex items-center justify-between">
+                            <p class="font-medium">Heure de réveil</p>
+                            <input type="time" id="wakeTime" value="07:30" class="bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white">
+                        </div>
+                        <div class="rounded-3xl border border-white/10 bg-white/6 p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="font-medium">Durée d'aube</p>
+                                <p class="text-amber-300 font-semibold" id="sunriseValue">30 min</p>
+                            </div>
+                            <input type="range" id="sunrise" min="10" max="60" value="30" class="w-full">
+                        </div>
+                        <div class="rounded-3xl border border-white/10 bg-white/6 p-5 flex items-center justify-between">
+                            <p class="font-medium">Extinction progressive</p>
+                            <input type="time" id="sleepTime" value="22:45" class="bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AMBIANCES TAB -->
+                <div id="ambiances" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold">Ambiances</h2>
+                    <p class="mt-1 text-sm text-white/50">Choisissez un mode pour chaque moment.</p>
+                    <div class="mt-5 grid grid-cols-2 gap-3">
+                        <button class="mode-btn text-left rounded-3xl p-4 border border-white/10 bg-white/6 text-white transition hover:bg-white/10 font-semibold" data-mode="Réveil naturel">Réveil naturel</button>
+                        <button class="mode-btn text-left rounded-3xl p-4 border border-white/10 bg-white/6 text-white transition hover:bg-white/10 font-semibold" data-mode="Relaxation">Relaxation</button>
+                        <button class="mode-btn text-left rounded-3xl p-4 border border-white/10 bg-white/6 text-white transition hover:bg-white/10 font-semibold" data-mode="Lecture">Lecture</button>
+                        <button class="mode-btn text-left rounded-3xl p-4 border border-white/10 bg-white/6 text-white transition hover:bg-white/10 font-semibold" data-mode="Énergie">Énergie</button>
+                    </div>
+                </div>
+
+                <!-- ROUTINE TAB -->
+                <div id="routine" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold">Routine bien-être</h2>
+                    <p class="mt-1 text-sm text-white/50">Créez une journée plus régulière.</p>
+                    <div class="mt-5 space-y-3">
+                        <div class="rounded-3xl border border-white/10 bg-white/6 p-5">
+                            <p class="font-medium">🔔 Rappel coucher</p>
+                            <p class="text-xs text-white/45 mt-1">Notification 30 min avant l'extinction.</p>
+                        </div>
+                        <div class="rounded-3xl border border-white/10 bg-white/6 p-5">
+                            <p class="font-medium">📊 Suivi du rythme</p>
+                            <p class="text-xs text-white/45 mt-1">Conseils selon vos horaires de sommeil.</p>
+                        </div>
+                        <div class="rounded-3xl border border-white/10 bg-white/6 p-5">
+                            <p class="font-medium">🌙 Mode nuit</p>
+                            <p class="text-xs text-white/45 mt-1">Lumière très douce après 22h.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- FOOTER -->
+            <div class="p-5 pt-0">
+                <button class="w-full h-14 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-semibold transition">💾 Enregistrer</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let isOn = true;
+        let currentMode = "Réveil naturel";
+
+        // Power button
+        function togglePower() {
+            isOn = !isOn;
+            const btn = document.getElementById('powerBtn');
+            const bulb = document.getElementById('lightBulb');
+            const brightness = document.getElementById('brightness').value;
+            
+            if (isOn) {
+                btn.classList.remove('bg-white/10');
+                btn.classList.add('bg-amber-400');
+                btn.innerHTML = '⚡';
+                bulb.classList.add('pulse');
+                updateStatus();
+            } else {
+                btn.classList.remove('bg-amber-400');
+                btn.classList.add('bg-white/10');
+                btn.innerHTML = '⭘';
+                bulb.classList.remove('pulse');
+                document.getElementById('statusText').textContent = 'Éteinte';
+            }
+        }
+
+        // Brightness slider
+        document.getElementById('brightness').addEventListener('input', (e) => {
+            document.getElementById('brightnessValue').textContent = e.target.value + '%';
+            if (isOn) updateStatus();
+        });
+
+        // Temperature slider
+        document.getElementById('temperature').addEventListener('input', (e) => {
+            const temp = parseInt(e.target.value);
+            document.getElementById('tempValue').textContent = temp + 'K';
+            
+            if (temp < 3000) {
+                document.getElementById('tempLabel').textContent = 'Chaud et apaisant';
+            } else if (temp < 5000) {
+                document.getElementById('tempLabel').textContent = 'Naturel et équilibré';
+            } else {
+                document.getElementById('tempLabel').textContent = 'Clair et énergisant';
+            }
+        });
+
+        // Wake time
+        document.getElementById('wakeTime').addEventListener('change', (e) => {
+            document.getElementById('wakeTimeDisplay').textContent = e.target.value;
+        });
+
+        // Sunrise duration
+        document.getElementById('sunrise').addEventListener('input', (e) => {
+            document.getElementById('sunriseValue').textContent = e.target.value + ' min';
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-amber-400', 'text-black');
+                    b.classList.add('bg-white/8', 'text-white/70', 'border', 'border-white/10');
+                });
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                
+                btn.classList.add('active', 'bg-amber-400', 'text-black');
+                btn.classList.remove('bg-white/8', 'text-white/70', 'border', 'border-white/10');
+                document.getElementById(btn.dataset.tab).classList.remove('hidden');
+            });
+        });
+
+        // Mode buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => {
+                    b.classList.remove('bg-amber-400', 'text-black', 'border-amber-300');
+                    b.classList.add('bg-white/6', 'text-white', 'border-white/10');
+                });
+                btn.classList.add('bg-amber-400', 'text-black', 'border-amber-300');
+                btn.classList.remove('bg-white/6', 'text-white', 'border-white/10');
+                currentMode = btn.dataset.mode;
+                document.getElementById('modeDisplay').textContent = currentMode;
+            });
+        });
+
+        function updateStatus() {
+            const brightness = document.getElementById('brightness').value;
+            document.getElementById('statusText').textContent = brightness + '%';
+        }
+
+        // Set first mode button as active
+        document.querySelector('.mode-btn').classList.add('bg-amber-400', 'text-black', 'border-amber-300');
+        document.querySelector('.mode-btn').classList.remove('bg-white/6', 'text-white', 'border-white/10');
+    </script>
+</body>
+</html>
